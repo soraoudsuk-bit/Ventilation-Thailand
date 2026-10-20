@@ -1,0 +1,6 @@
+Verified 2026-10-20 against 77 provincial source images fetched on 2026-10-20.
+77/77 printed values matched manual image reading; all four Fair labels matched.
+Excel latest/history each had 77 rows after two runs; no duplicate rows.
+Unknown image dimensions and dates outside the forecast period are rejected.
+GitHub scheduled execution has not been deployed or tested in a user repository.
+OCR can still make errors on future images.
