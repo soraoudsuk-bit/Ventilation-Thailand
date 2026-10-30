@@ -2,6 +2,12 @@ name: TMD Daily Excel
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'collect.py'
+      - 'provinces.csv'
+      - 'requirements.txt'
+      - '.github/workflows/daily.yml'
   schedule:
     # 02:17 UTC = 09:17 Asia/Bangkok. GitHub may start later during busy periods.
     - cron: '17 2 * * *'
