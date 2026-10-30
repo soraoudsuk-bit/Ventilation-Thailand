@@ -62,7 +62,7 @@ def read_chart(image, target):
     label = ocr(image.crop((x-32, 539, x+33, 565)), psm=7)
     normalized = re.sub('[^a-z0-9]', '', label.lower())
     expected = f'{target.day}{MONTHS[target.month-1]}'.lower()
-    if normalized != expected:
+    if normalized.lstrip('0') != expected:
         raise ValueError(f'date_label_mismatch: {label} != {expected}')
     rgb = np.array(image.convert('RGB'))
     # The colored bar is wide and continuous; dashed threshold lines are not.
@@ -76,21 +76,28 @@ def read_chart(image, target):
             if i - beginning >= 3:
                 runs.append((beginning+68, i+68))
             beginning = None
-    if not runs or runs[-1][1] < 530:
+    zero_bar = not runs
+    if runs and runs[-1][1] < 530:
         raise ValueError('cannot_locate_bar')
-    top = runs[-1][0]
+    top = 537 if zero_bar else runs[-1][0]
     # Crop the printed number immediately above the bar, not its estimated height.
-    roi = image.crop((x-28, top-15, x+29, top-1))
+    roi = image.crop((x-31, top-12 if zero_bar else top-16, x+32, top+1 if zero_bar else top))
     first = ocr(roi, psm=7, digits=True)
     second = ocr(roi, psm=6, digits=True)
-    def parse(s):
-        s = s.strip().strip('()').strip()
-        if not re.fullmatch(r'\d{1,5}', s):
-            return None
-        return int(s)
-    v1, v2 = parse(first), parse(second)
-    if v1 is None or v1 != v2 or v1 > 12000:
+    # Include the complete glyphs: tight crops turn (1875) into 14875).
+    # Both OCR passes and the plotted geometry must agree.
+    height_value = (537-top) * 12000 / (537-68)
+    def candidates(text):
+        clean = text.strip()
+        options = {clean.strip('()').strip()}
+        return {int(v) for v in options if re.fullmatch(r'\d{1,5}', v)
+                and 0 <= int(v) <= 12000 and abs(height_value-int(v)) <= 250}
+    agreed = candidates(first) & candidates(second)
+    if len(agreed) != 1:
         raise ValueError(f'number_ocr_uncertain: {first!r}/{second!r}')
+    v1 = agreed.pop()
+    if zero_bar and v1 != 0:
+        raise ValueError('cannot_confirm_zero_bar')
     level = ocr(image.crop((x-32, top-32, x+33, top-12)), psm=7)
     levels = {'poor':'Poor', 'fair':'Fair', 'good':'Good', 'verygood':'Very Good'}
     clean = re.sub('[^a-z]', '', level.lower())
@@ -124,7 +131,17 @@ def collect(province, target, cache=None):
                               'รอตรวจสอบ', datetime.now(ZoneInfo('Asia/Bangkok')).isoformat(), url, '']))
     try:
         local = Path(cache) / f'daily_VR_{code}.png' if cache else None
-        image = Image.open(local if local else io.BytesIO(fetch(url)))
+        if local:
+            image = Image.open(local)
+        else:
+            raw = fetch(url)
+            # Preserve the exact source bytes, including charts OCR cannot read.
+            archive = ROOT/'data'/'images'/target.isoformat()
+            archive.mkdir(parents=True, exist_ok=True)
+            source = archive/f'daily_VR_{code}.png'
+            if not source.exists():
+                source.write_bytes(raw)
+            image = Image.open(io.BytesIO(raw))
         value, level, init = read_chart(image, target)
         record.update(value_m2_s=value, level=level, gfs_init_utc=init, status='อ่านได้')
     except Exception as exc:
@@ -174,6 +191,7 @@ def excel(rows, latest_date, path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', default=datetime.now(ZoneInfo('Asia/Bangkok')).date().isoformat())
+    parser.add_argument('--repair-history', action='store_true', help='Retry missing values from archived source images; never substitute a newer forecast')
     parser.add_argument('--cache-dir', help='Local images for offline verification only')
     args = parser.parse_args()
     target = date.fromisoformat(args.date)
@@ -193,6 +211,19 @@ def main():
         if old and old['status'] == 'อ่านได้' and row['status'] != 'อ่านได้':
             continue  # A temporary retry failure must not erase a valid earlier observation.
         merged[key] = row
+    if args.repair_history:
+        mapping = {p['province']: p for p in provinces}
+        for key, old in list(merged.items()):
+            if old['status'] == 'อ่านได้':
+                continue
+            folder = data/'images'/old['date']
+            image_path = folder/f"daily_VR_{mapping[old['province']]['station_id']}.png"
+            if not image_path.exists():
+                continue  # Old URLs are mutable; a new forecast is not the original source.
+            repaired = collect(mapping[old['province']], date.fromisoformat(old['date']), folder)
+            if repaired['status'] == 'อ่านได้' and (not old['gfs_init_utc'] or
+                    repaired['gfs_init_utc'] == old['gfs_init_utc']):
+                merged[key] = repaired
     rows = sorted(merged.values(), key=lambda r:(r['date'],r['province']))
     for row in rows:
         row['value_m2_s'] = int(row['value_m2_s']) if row['value_m2_s'] not in ('',None) else None
