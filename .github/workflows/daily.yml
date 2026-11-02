@@ -3,6 +3,8 @@ name: TMD Daily Excel
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - 'collect.py'
       - 'provinces.csv'
