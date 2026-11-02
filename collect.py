@@ -26,6 +26,11 @@ FIELDS = ['date', 'province', 'value_m2_s', 'level', 'gfs_init_utc',
 HEADERS = ['วันที่ (ค.ศ.)', 'จังหวัด', 'ค่า (m²/s)', 'ระดับตามภาพ',
            'รอบ GFS (UTC)', 'สถานะ', 'ดึงข้อมูลเมื่อ (เวลาไทย)', 'ภาพต้นทาง', 'หมายเหตุ']
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+# TMD's fixed chart layout has a vertical axis from 0 to 10,000 m²/s.
+CHART_MAX_VALUE = 10000
+# A bar edge can shift a few pixels from antialiasing; one 125 m²/s tick is
+# about six pixels, so keep the tolerance below one full tick.
+BAR_VALUE_TOLERANCE = 80
 
 def ocr(image, psm=6, digits=False):
     pixels = np.array(image.convert('RGB'))
@@ -44,6 +49,27 @@ def ocr(image, psm=6, digits=False):
                                 env=dict(os.environ, OMP_THREAD_LIMIT='1'), check=True)
         return result.stdout.strip()
 
+def number_candidates(text, height_value):
+    clean = text.strip()
+    options = {clean.strip('()').strip()}
+    # Tesseract sometimes sees the opening parenthesis as a leading "1",
+    # e.g. "(4875)" -> "14875)". Consider 4875 only as an alternate and
+    # let the bar geometry decide; never accept this OCR substitution alone.
+    if not clean.startswith('(') and re.fullmatch(r'1\d{4,5}\)', clean):
+        options.add(clean[1:-1])
+    return {int(v) for v in options if re.fullmatch(r'\d{1,5}', v)
+            and 0 <= int(v) <= CHART_MAX_VALUE
+            and abs(height_value-int(v)) <= BAR_VALUE_TOLERANCE}
+
+def validated_number(first, second, height_value, zero_bar=False):
+    agreed = number_candidates(first, height_value) & number_candidates(second, height_value)
+    if len(agreed) != 1:
+        raise ValueError(f'number_ocr_uncertain: {first!r}/{second!r}')
+    value = agreed.pop()
+    if zero_bar and value != 0:
+        raise ValueError('cannot_confirm_zero_bar')
+    return value
+
 def read_chart(image, target):
     # Refuse unknown layouts rather than silently reading the wrong date.
     if image.size != (1000, 600):
@@ -59,7 +85,9 @@ def read_chart(image, target):
     if not 0 <= offset < 10:
         raise ValueError('target_date_not_in_image: ' + init)
     x = round(161 + offset * 75)
-    label = ocr(image.crop((x-32, 539, x+33, 565)), psm=7)
+    # Leave room for the final glyph: a 65 px crop drops the right stroke of
+    # the "v" in labels such as "01-Nov" and Tesseract reads it as punctuation.
+    label = ocr(image.crop((x-40, 539, x+41, 565)), psm=7)
     normalized = re.sub('[^a-z0-9]', '', label.lower())
     expected = f'{target.day}{MONTHS[target.month-1]}'.lower()
     if normalized.lstrip('0') != expected:
@@ -86,26 +114,16 @@ def read_chart(image, target):
     second = ocr(roi, psm=6, digits=True)
     # Include the complete glyphs: tight crops turn (1875) into 14875).
     # Both OCR passes and the plotted geometry must agree.
-    height_value = (537-top) * 12000 / (537-68)
-    def candidates(text):
-        clean = text.strip()
-        options = {clean.strip('()').strip()}
-        return {int(v) for v in options if re.fullmatch(r'\d{1,5}', v)
-                and 0 <= int(v) <= 12000 and abs(height_value-int(v)) <= 250}
-    agreed = candidates(first) & candidates(second)
-    if len(agreed) != 1:
-        raise ValueError(f'number_ocr_uncertain: {first!r}/{second!r}')
-    v1 = agreed.pop()
-    if zero_bar and v1 != 0:
-        raise ValueError('cannot_confirm_zero_bar')
+    height_value = (537-top) * CHART_MAX_VALUE / (537-68)
+    v1 = validated_number(first, second, height_value, zero_bar)
     level = ocr(image.crop((x-32, top-32, x+33, top-12)), psm=7)
     levels = {'poor':'Poor', 'fair':'Fair', 'good':'Good', 'verygood':'Very Good'}
     clean = re.sub('[^a-z]', '', level.lower())
     if clean not in levels:
         raise ValueError('level_ocr_uncertain: ' + level)
     # Independent, deliberately loose check against the plotted bar. Not the data source.
-    height_value = (537-top) * 12000 / (537-68)
-    if abs(height_value-v1) > 250:
+    height_value = (537-top) * CHART_MAX_VALUE / (537-68)
+    if abs(height_value-v1) > BAR_VALUE_TOLERANCE:
         raise ValueError(f'number_and_bar_disagree: {v1}')
     return v1, levels[clean], init
 
@@ -246,3 +264,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

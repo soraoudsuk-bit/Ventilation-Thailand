@@ -877,7 +877,7 @@
 2026-10-31,ปราจีนบุรี,625,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:56:02.881710+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_430201.png,
 2026-10-31,ปัตตานี,500,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:56:08.796472+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_580201.png,
 2026-10-31,พระนครศรีอยุธยา,375,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:58.050498+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_415301.png,
-2026-10-31,พะเยา,,,,รอตรวจสอบ,2026-10-31T09:55:40.510982+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_310201.png,number_ocr_uncertain: '(1375)'/'(1375)'
+2026-10-31,พะเยา,1375,Poor,2026-10-30 00Z,อ่านได้,2026-11-02T09:42:04.593579+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_310201.png,
 2026-10-31,พังงา,625,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:56:06.540379+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_561201.png,
 2026-10-31,พัทลุง,375,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:56:08.036640+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_560301.png,
 2026-10-31,พิจิตร,250,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:45.191124+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_386301.png,
@@ -908,15 +908,15 @@
 2026-10-31,สุราษฎร์ธานี,875,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:56:06.538682+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_551201.png,
 2026-10-31,สุรินทร์,375,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:55.906799+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_432201.png,
 2026-10-31,สุโขทัย,500,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:45.151185+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_373201.png,
-2026-10-31,หนองคาย,,,,รอตรวจสอบ,2026-10-31T09:55:48.971250+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_352201.png,number_ocr_uncertain: '(1375)'/'(1375)'
+2026-10-31,หนองคาย,1375,Poor,2026-10-30 00Z,อ่านได้,2026-11-02T09:42:05.066353+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_352201.png,
 2026-10-31,หนองบัวลำภู,625,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:50.925058+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_360201.png,
 2026-10-31,อำนาจเจริญ,500,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:52.568160+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_391201.png,
-2026-10-31,อุดรธานี,,,,รอตรวจสอบ,2026-10-31T09:55:49.016060+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_354201.png,number_ocr_uncertain: '(1375)'/'(1375)'
+2026-10-31,อุดรธานี,1375,Poor,2026-10-30 00Z,อ่านได้,2026-11-02T09:42:05.593451+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_354201.png,
 2026-10-31,อุตรดิตถ์,500,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:42.379123+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_351201.png,
 2026-10-31,อุทัยธานี,500,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:56.589701+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_410201.png,
 2026-10-31,อุบลราชธานี,500,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:47.143501+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_407501.png,
 2026-10-31,อ่างทอง,375,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:57.367139+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_414000.png,
-2026-10-31,เชียงราย,,,,รอตรวจสอบ,2026-10-31T09:55:38.542378+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_303201.png,number_ocr_uncertain: '(1250)'/'(1250)'
+2026-10-31,เชียงราย,1250,Poor,2026-10-30 00Z,อ่านได้,2026-11-02T09:42:06.082800+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_303201.png,
 2026-10-31,เชียงใหม่,625,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:38.541860+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_327501.png,
 2026-10-31,เพชรบุรี,375,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:56:04.732892+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_465201.png,
 2026-10-31,เพชรบูรณ์,0,Poor,2026-10-30 00Z,อ่านได้,2026-10-31T09:55:47.115250+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_379201.png,
@@ -961,9 +961,9 @@
 2026-11-01,พิษณุโลก,375,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:04.552149+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_378201.png,
 2026-11-01,ภูเก็ต,375,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:23.301136+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_564201.png,
 2026-11-01,มหาสารคาม,1125,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:11.776971+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_387401.png,
-2026-11-01,มุกดาหาร,,,,รอตรวจสอบ,2026-11-01T09:57:11.052911+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_383201.png,date_label_mismatch: 01 -No’ != 1nov
+2026-11-01,มุกดาหาร,750,Poor,2026-10-31 00Z,อ่านได้,2026-11-02T09:46:52.263935+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_383201.png,
 2026-11-01,ยะลา,500,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:28.194262+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_581301.png,
-2026-11-01,ยโสธร,,,,รอตรวจสอบ,2026-11-01T09:57:13.253172+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_406201.png,date_label_mismatch: 01 -No’ != 1nov
+2026-11-01,ยโสธร,750,Poor,2026-10-31 00Z,อ่านได้,2026-11-02T09:46:52.754731+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_406201.png,
 2026-11-01,ระนอง,250,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:24.781083+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_532201.png,
 2026-11-01,ระยอง,875,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:20.887215+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_478201.png,
 2026-11-01,ราชบุรี,1000,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:18.876652+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_424301.png,
@@ -977,7 +977,7 @@
 2026-11-01,สตูล,625,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:27.807776+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_570201.png,
 2026-11-01,สมุทรปราการ,1125,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:56:55.756318+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_429301.png,
 2026-11-01,สมุทรสงคราม,625,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:19.399885+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_438201.png,
-2026-11-01,สมุทรสาคร,,,,รอตรวจสอบ,2026-11-01T09:56:57.893742+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_474000.png,number_ocr_uncertain: '(1250)'/'(1250)'
+2026-11-01,สมุทรสาคร,1250,Poor,2026-10-31 00Z,อ่านได้,2026-11-02T09:46:53.217704+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_474000.png,
 2026-11-01,สระบุรี,625,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:17.916961+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_418000.png,
 2026-11-01,สระแก้ว,500,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:21.857111+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_440401.png,
 2026-11-01,สิงห์บุรี,750,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:17.019552+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_416000.png,
@@ -987,7 +987,7 @@
 2026-11-01,สุโขทัย,625,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:04.536536+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_373201.png,
 2026-11-01,หนองคาย,375,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:08.429073+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_352201.png,
 2026-11-01,หนองบัวลำภู,375,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:09.885422+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_360201.png,
-2026-11-01,อำนาจเจริญ,,,,รอตรวจสอบ,2026-11-01T09:57:12.382983+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_391201.png,date_label_mismatch: 01 -No’ != 1nov
+2026-11-01,อำนาจเจริญ,750,Poor,2026-10-31 00Z,อ่านได้,2026-11-02T09:46:53.717586+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_391201.png,
 2026-11-01,อุดรธานี,375,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:09.041797+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_354201.png,
 2026-11-01,อุตรดิตถ์,625,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:02.046866+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_351201.png,
 2026-11-01,อุทัยธานี,625,Poor,2026-10-31 00Z,อ่านได้,2026-11-01T09:57:15.552867+07:00,https://ozone.tmd.go.th/PM2.5/weather/Metgram/output/VR_daily/daily_VR_410201.png,
