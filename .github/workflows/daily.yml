@@ -3,6 +3,8 @@ name: TMD Daily Excel
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - 'collect.py'
       - 'provinces.csv'
@@ -33,6 +35,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y tesseract-ocr tesseract-ocr-eng
           python -m pip install -r requirements.txt
+      - name: Verify archived chart OCR and geometry checks
+        run: python -m unittest discover -s tests -v
       - name: Read today's 77 provincial forecasts
         env:
           OMP_THREAD_LIMIT: '1'
@@ -46,3 +50,4 @@ jobs:
             git commit -m 'Update daily ventilation data'
             git push
           fi
+
