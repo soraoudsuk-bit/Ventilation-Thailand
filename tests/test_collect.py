@@ -1,8 +1,6 @@
 import unittest
 from datetime import date
 from pathlib import Path
-from unittest.mock import patch
-
 from PIL import Image
 
 import collect
@@ -42,15 +40,29 @@ class HistoricalChartTests(unittest.TestCase):
                     collect.read_chart(image, date(2026, 11, 1))[0], value
                 )
 
-    def test_one_tick_ocr_error_is_rejected_by_bar_geometry(self):
-        image = Image.open(ARCHIVE / "daily_VR_310201.png")
-        # Header, date label, two matching but wrong number OCR passes, level.
-        outputs = iter(
-            ["2026-10-30 00Z", "31-Oct", "(1500)", "(1500)", "Poor"]
+    def test_archived_november_2_header_suffix_ocr_as_two(self):
+        image = Image.open(
+            ROOT / "data" / "images" / "2026-11-02" / "daily_VR_566202.png"
         )
-        with patch("collect.ocr", side_effect=lambda *args, **kwargs: next(outputs)):
-            with self.assertRaisesRegex(ValueError, "number_ocr_uncertain"):
-                collect.read_chart(image, date(2026, 10, 31))
+        value, _, init = collect.read_chart(image, date(2026, 11, 2))
+        self.assertEqual(value, 250)
+        self.assertEqual(init, "2026-11-01 00Z")
+
+    def test_all_archived_november_2_station_images_are_readable(self):
+        archive = ROOT / "data" / "images" / "2026-11-02"
+        images = sorted(archive.glob("daily_VR_*.png"))
+        self.assertEqual(len(images), 77)
+        for path in images:
+            with self.subTest(station=path.stem):
+                image = Image.open(path)
+                self.assertEqual(
+                    collect.read_chart(image, date(2026, 11, 2))[2],
+                    "2026-11-01 00Z",
+                )
+
+    def test_one_tick_ocr_error_is_rejected_by_bar_geometry(self):
+        with self.assertRaisesRegex(ValueError, "number_ocr_uncertain"):
+            collect.validated_number("(1500)", "(1500)", 1386)
 
     def test_opening_parenthesis_substitution_requires_geometry(self):
         self.assertEqual(
@@ -58,6 +70,14 @@ class HistoricalChartTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "number_ocr_uncertain"):
             collect.validated_number("14875)", "14875)", 1386)
+
+    def test_ambiguous_3_or_8_uses_bar_height(self):
+        self.assertEqual(
+            collect.validated_number("(8125)", "(8125)", 3134), 3125
+        )
+        self.assertEqual(
+            collect.validated_number("(8125)", "(8125)", 8125), 8125
+        )
 
 
 if __name__ == "__main__":

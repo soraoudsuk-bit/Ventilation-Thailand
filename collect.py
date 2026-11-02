@@ -57,6 +57,14 @@ def number_candidates(text, height_value):
     # let the bar geometry decide; never accept this OCR substitution alone.
     if not clean.startswith('(') and re.fullmatch(r'1\d{4,5}\)', clean):
         options.add(clean[1:-1])
+    # Small chart labels can make 3/8 ambiguous to Tesseract. Keep the
+    # one-digit alternative only when the independently measured bar height
+    # supports it.
+    for candidate in tuple(options):
+        for i, digit in enumerate(candidate):
+            replacement = {'3': '8', '8': '3'}.get(digit)
+            if replacement:
+                options.add(candidate[:i] + replacement + candidate[i+1:])
     return {int(v) for v in options if re.fullmatch(r'\d{1,5}', v)
             and 0 <= int(v) <= CHART_MAX_VALUE
             and abs(height_value-int(v)) <= BAR_VALUE_TOLERANCE}
@@ -70,12 +78,55 @@ def validated_number(first, second, height_value, zero_bar=False):
         raise ValueError('cannot_confirm_zero_bar')
     return value
 
+def find_date_x(image, target):
+    # TMD charts do not always use the same horizontal spacing or number of
+    # date labels. Read the whole axis as TSV and use the matched label's box
+    # instead of assuming a fixed x coordinate.
+    axis = image.crop((90, 539, 910, 566))
+    pixels = np.array(axis.convert('RGB'))
+    colorful = pixels.astype(int).max(axis=2)-pixels.astype(int).min(axis=2) > 35
+    pixels[colorful] = 255
+    prepared = ImageOps.grayscale(Image.fromarray(pixels)).resize(
+        (axis.width * 4, axis.height * 4)
+    )
+    prepared = ImageOps.expand(prepared, border=20, fill=255)
+    with tempfile.TemporaryDirectory() as folder:
+        path = Path(folder) / 'axis.png'
+        prepared.save(path)
+        result = subprocess.run(
+            ['tesseract', str(path), 'stdout', '--psm', '6', '-l', 'eng', 'tsv'],
+            capture_output=True, text=True, timeout=25,
+            env=dict(os.environ, OMP_THREAD_LIMIT='1'), check=True
+        )
+    expected_month = MONTHS[target.month-1].lower()
+    observed = []
+    for line in result.stdout.splitlines()[1:]:
+        fields = line.split('\t')
+        if len(fields) < 12 or not fields[11].strip():
+            continue
+        text = fields[11].strip()
+        observed.append(text)
+        match = re.fullmatch(r'([0-9Oo]{1,2})[-/]?([a-zA-Z]{3})', text)
+        if not match:
+            continue
+        day_text, month_text = match.groups()
+        day_text = day_text.replace('O', '0').replace('o', '0')
+        if int(day_text) != target.day or month_text.lower() != expected_month.lower():
+            continue
+        left, width = int(fields[6]), int(fields[8])
+        return round(90 + (left - 20 + width / 2) / 4)
+    expected = f'{target.day}{expected_month}'.lower()
+    raise ValueError(f'date_label_mismatch: {" ".join(observed)} != {expected}')
+
 def read_chart(image, target):
     # Refuse unknown layouts rather than silently reading the wrong date.
     if image.size != (1000, 600):
         raise ValueError(f'layout_changed: {image.size}')
     header = ocr(image.crop((245, 42, 765, 65)), psm=7)
-    match = re.search(r'(20\d{2})[-/](\d{2})[-/](\d{2})\s+(\d{2})[Zz]', header)
+    # Tesseract confuses the final printed "Z" with "2" on some chart images.
+    # In this fixed header format only the suffix marks UTC, so normalize that
+    # single terminal glyph rather than rejecting all 77 station rows.
+    match = re.search(r'(20\d{2})[-/](\d{2})[-/](\d{2})\s+(\d{2})[Zz2]', header)
     if not match:
         raise ValueError('cannot_read_forecast_init: ' + header)
     yyyy, mm, dd, hh = match.groups()
@@ -84,14 +135,7 @@ def read_chart(image, target):
     offset = (target - start).days
     if not 0 <= offset < 10:
         raise ValueError('target_date_not_in_image: ' + init)
-    x = round(161 + offset * 75)
-    # Leave room for the final glyph: a 65 px crop drops the right stroke of
-    # the "v" in labels such as "01-Nov" and Tesseract reads it as punctuation.
-    label = ocr(image.crop((x-40, 539, x+41, 565)), psm=7)
-    normalized = re.sub('[^a-z0-9]', '', label.lower())
-    expected = f'{target.day}{MONTHS[target.month-1]}'.lower()
-    if normalized.lstrip('0') != expected:
-        raise ValueError(f'date_label_mismatch: {label} != {expected}')
+    x = find_date_x(image, target)
     rgb = np.array(image.convert('RGB'))
     # The colored bar is wide and continuous; dashed threshold lines are not.
     column = rgb[68:537, x-4:x+5, :].astype(int)
@@ -109,7 +153,7 @@ def read_chart(image, target):
         raise ValueError('cannot_locate_bar')
     top = 537 if zero_bar else runs[-1][0]
     # Crop the printed number immediately above the bar, not its estimated height.
-    roi = image.crop((x-31, top-12 if zero_bar else top-16, x+32, top+1 if zero_bar else top))
+    roi = image.crop((x-42, top-12 if zero_bar else top-16, x+43, top+1 if zero_bar else top))
     first = ocr(roi, psm=7, digits=True)
     second = ocr(roi, psm=6, digits=True)
     # Include the complete glyphs: tight crops turn (1875) into 14875).
