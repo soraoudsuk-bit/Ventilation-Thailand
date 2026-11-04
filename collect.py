@@ -26,8 +26,6 @@ FIELDS = ['date', 'province', 'value_m2_s', 'level', 'gfs_init_utc',
 HEADERS = ['วันที่ (ค.ศ.)', 'จังหวัด', 'ค่า (m²/s)', 'ระดับตามภาพ',
            'รอบ GFS (UTC)', 'สถานะ', 'ดึงข้อมูลเมื่อ (เวลาไทย)', 'ภาพต้นทาง', 'หมายเหตุ']
 MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-# TMD's fixed chart layout has a vertical axis from 0 to 10,000 m²/s.
-CHART_MAX_VALUE = 10000
 # A bar edge can shift a few pixels from antialiasing; one 125 m²/s tick is
 # about six pixels, so keep the tolerance below one full tick.
 BAR_VALUE_TOLERANCE = 80
@@ -65,8 +63,7 @@ def number_candidates(text, height_value):
             replacement = {'3': '8', '8': '3'}.get(digit)
             if replacement:
                 options.add(candidate[:i] + replacement + candidate[i+1:])
-    return {int(v) for v in options if re.fullmatch(r'\d{1,5}', v)
-            and 0 <= int(v) <= CHART_MAX_VALUE
+    return {int(v) for v in options if re.fullmatch(r'\d{1,6}', v)
             and abs(height_value-int(v)) <= BAR_VALUE_TOLERANCE}
 
 def validated_number(first, second, height_value, zero_bar=False):
@@ -118,6 +115,16 @@ def find_date_x(image, target):
     expected = f'{target.day}{expected_month}'.lower()
     raise ValueError(f'date_label_mismatch: {" ".join(observed)} != {expected}')
 
+def read_axis_max(image):
+    # Read the tick labels from each image instead of assuming a fixed y-axis scale.
+    axis = image.crop((35, 68, 95, 537))
+    text = ocr(axis, psm=6, digits=True)
+    ticks = [int(value) for value in re.findall(r'\d{1,6}', text)]
+    ticks = [value for value in ticks if value > 0]
+    if not ticks:
+        raise ValueError('cannot_read_vertical_scale: ' + text)
+    return max(ticks)
+
 def read_chart(image, target):
     # Refuse unknown layouts rather than silently reading the wrong date.
     if image.size != (1000, 600):
@@ -136,6 +143,7 @@ def read_chart(image, target):
     if not 0 <= offset < 10:
         raise ValueError('target_date_not_in_image: ' + init)
     x = find_date_x(image, target)
+    axis_max = read_axis_max(image)
     rgb = np.array(image.convert('RGB'))
     # The colored bar is wide and continuous; dashed threshold lines are not.
     column = rgb[68:537, x-4:x+5, :].astype(int)
@@ -158,7 +166,7 @@ def read_chart(image, target):
     second = ocr(roi, psm=6, digits=True)
     # Include the complete glyphs: tight crops turn (1875) into 14875).
     # Both OCR passes and the plotted geometry must agree.
-    height_value = (537-top) * CHART_MAX_VALUE / (537-68)
+    height_value = (537-top) * axis_max / (537-68)
     v1 = validated_number(first, second, height_value, zero_bar)
     level = ocr(image.crop((x-32, top-32, x+33, top-12)), psm=7)
     levels = {'poor':'Poor', 'fair':'Fair', 'good':'Good', 'verygood':'Very Good'}
@@ -166,7 +174,7 @@ def read_chart(image, target):
     if clean not in levels:
         raise ValueError('level_ocr_uncertain: ' + level)
     # Independent, deliberately loose check against the plotted bar. Not the data source.
-    height_value = (537-top) * CHART_MAX_VALUE / (537-68)
+    height_value = (537-top) * axis_max / (537-68)
     if abs(height_value-v1) > BAR_VALUE_TOLERANCE:
         raise ValueError(f'number_and_bar_disagree: {v1}')
     return v1, levels[clean], init
