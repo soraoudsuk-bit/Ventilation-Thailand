@@ -67,6 +67,16 @@ def number_candidates(text, height_value):
             and abs(height_value-int(v)) <= BAR_VALUE_TOLERANCE}
 
 def validated_number(first, second, height_value, zero_bar=False):
+    # Prefer the number both OCR passes read verbatim when the bar geometry
+    # supports it. Use 3/8 substitutions only when the direct reading fails.
+    direct_first = first.strip().strip('()').strip()
+    direct_second = second.strip().strip('()').strip()
+    if direct_first == direct_second and re.fullmatch(r'\d{1,6}', direct_first):
+        direct = int(direct_first)
+        if abs(height_value-direct) <= BAR_VALUE_TOLERANCE:
+            if zero_bar and direct != 0:
+                raise ValueError('cannot_confirm_zero_bar')
+            return direct
     agreed = number_candidates(first, height_value) & number_candidates(second, height_value)
     if len(agreed) != 1:
         raise ValueError(f'number_ocr_uncertain: {first!r}/{second!r}')
