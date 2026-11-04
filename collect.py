@@ -117,7 +117,7 @@ def find_date_x(image, target):
 
 def read_axis_max(image):
     # Read the tick labels from each image instead of assuming a fixed y-axis scale.
-    axis = image.crop((35, 68, 95, 537))
+    axis = image.crop((35, 40, 95, 537))
     text = ocr(axis, psm=6, digits=True)
     ticks = [int(value) for value in re.findall(r'\d{1,6}', text)]
     ticks = [value for value in ticks if value > 0]
